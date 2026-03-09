@@ -1,0 +1,408 @@
+openapi: 3.0.3
+info:
+  title: Movie Ticket Booking Service API
+  description: |
+    Backend API for a Movie Ticket Booking platform supporting both
+    B2B theatre partners and B2C customers. The system allows theatre
+    partners to manage theatres, screens, seats, and shows while customers
+    can browse movies and book tickets.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Partner
+  - name: Theatre
+  - name: Screen
+  - name: Seat
+  - name: Movie
+  - name: Show
+  - name: Booking
+
+paths:
+
+  /partners:
+    post:
+      tags: [Partner]
+      summary: Create partner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartnerRequest'
+      responses:
+        '201':
+          description: Partner created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Partner'
+
+  /partners/theatres:
+    post:
+      tags: [Theatre]
+      summary: Create theatre
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TheatreRequest'
+      responses:
+        '201':
+          description: Theatre created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Theatre'
+
+  /partners/screens:
+    post:
+      tags: [Screen]
+      summary: Create screen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreenRequest'
+      responses:
+        '201':
+          description: Screen created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Screen'
+
+  /partners/screens/{theatreId}:
+    get:
+      tags: [Screen]
+      summary: Get screens by theatre
+      parameters:
+        - name: theatreId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of screens
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Screen'
+
+  /partners/seats:
+    post:
+      tags: [Seat]
+      summary: Create seat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatRequest'
+      responses:
+        '201':
+          description: Seat created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seat'
+
+  /partners/seats/bulk:
+    post:
+      tags: [Seat]
+      summary: Create seats in bulk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkSeatRequest'
+      responses:
+        '201':
+          description: Bulk seats created
+
+  /movies:
+    post:
+      tags: [Movie]
+      summary: Create movie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieRequest'
+      responses:
+        '201':
+          description: Movie created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+
+    get:
+      tags: [Movie]
+      summary: Get all movies
+      responses:
+        '200':
+          description: Movie list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /movies/language/{language}:
+    get:
+      tags: [Movie]
+      summary: Find movies by language
+      parameters:
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movies filtered by language
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /movies/genre/{genre}:
+    get:
+      tags: [Movie]
+      summary: Find movies by genre
+      parameters:
+        - name: genre
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Movies filtered by genre
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+
+  /shows:
+    post:
+      tags: [Show]
+      summary: Create show
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShowRequest'
+      responses:
+        '201':
+          description: Show created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Show'
+
+  /bookings:
+    post:
+      tags: [Booking]
+      summary: Book tickets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Booking confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+
+components:
+
+  schemas:
+
+    PartnerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+
+    Partner:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+
+    TheatreRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+        partnerId:
+          type: integer
+
+    Theatre:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        location:
+          type: string
+
+    ScreenRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        theatreId:
+          type: integer
+
+    Screen:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        theatreId:
+          type: integer
+
+    SeatRequest:
+      type: object
+      properties:
+        screenId:
+          type: integer
+        seatNumber:
+          type: string
+        type:
+          type: string
+
+    Seat:
+      type: object
+      properties:
+        id:
+          type: integer
+        seatNumber:
+          type: string
+        type:
+          type: string
+        screenId:
+          type: integer
+
+    BulkSeatRequest:
+      type: object
+      properties:
+        screenId:
+          type: integer
+        rows:
+          type: array
+          items:
+            type: string
+        seatsPerRow:
+          type: integer
+
+    MovieRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        language:
+          type: string
+        genre:
+          type: string
+
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        language:
+          type: string
+        genre:
+          type: string
+
+    ShowRequest:
+      type: object
+      properties:
+        movieId:
+          type: integer
+        screenId:
+          type: integer
+        startTime:
+          type: string
+          format: date-time
+        price:
+          type: number
+
+    Show:
+      type: object
+      properties:
+        id:
+          type: integer
+        movieId:
+          type: integer
+        screenId:
+          type: integer
+        startTime:
+          type: string
+        price:
+          type: number
+
+    BookingRequest:
+      type: object
+      properties:
+        showId:
+          type: integer
+        seatIds:
+          type: array
+          items:
+            type: integer
+        userId:
+          type: integer
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+        showId:
+          type: integer
+        userId:
+          type: integer
+        seatIds:
+          type: array
+          items:
+            type: integer
+        status:
+          type: string
