@@ -1,0 +1,67 @@
+postman request POST 'http://localhost:8080/partner' \
+  --header 'Content-Type: application/json' \
+  --body '{
+ "name": "INOX Cinemas",
+ "email": "inox@cinema.com"
+}'
+
+
+postman request POST 'http://localhost:8080/partner/theatres' \
+  --header 'Content-Type: application/json' \
+  --body '{
+ "name": "INOX Garuda Mall",
+ "city": "Bangalore",
+ "partner": {
+   "id": 1
+ }
+}'
+
+
+postman request POST 'http://localhost:8080/partner/screens' \
+  --header 'Content-Type: application/json' \
+  --body '{
+ "name": "Screen 1",
+ "totalSeats": 120,
+ "theatreId": 1
+}'
+
+
+postman request POST 'http://localhost:8080/partner/seats/bulk' \
+  --header 'Content-Type: application/json' \
+  --body '{
+ "screenId": 1,
+ "seatNumbers": [
+   "A1","A2","A3","A4",
+   "B1","B2","B3","B4"
+ ]
+}'
+
+postman request POST 'http://localhost:8080/movies' \
+  --header 'Content-Type: application/json' \
+  --body '{
+ "title": "RRR",
+ "language": "Telugu",
+ "genre": "Action"
+}'
+
+
+postman request POST 'http://localhost:8080/bookings' \
+  --header 'Content-Type: application/json' \
+  --body '{
+ "user": "Yoga",
+ "showId": 1,
+ "seatIds": [1,2]
+}'
+
+
+postman request POST 'http://localhost:8080/partner/shows' \
+  --header 'Content-Type: application/json' \
+  --body '{
+ "movie": {
+   "id": 1
+ },
+ "screen": {
+   "id": 1
+ },
+ "showTime": "2026-03-10T18:00:00"
+}'
