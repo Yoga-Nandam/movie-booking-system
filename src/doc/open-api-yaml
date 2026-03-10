@@ -3,9 +3,7 @@ info:
   title: Movie Ticket Booking Service API
   description: |
     Backend API for a Movie Ticket Booking platform supporting both
-    B2B theatre partners and B2C customers. The system allows theatre
-    partners to manage theatres, screens, seats, and shows while customers
-    can browse movies and book tickets.
+    B2B theatre partners and B2C customers.
   version: 1.0.0
 
 servers:
@@ -40,6 +38,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Partner'
+        '400':
+          description: Invalid partner request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Partner already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /partners/theatres:
     post:
@@ -58,6 +74,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Theatre'
+        '400':
+          description: Invalid theatre request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Partner not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /partners/screens:
     post:
@@ -76,6 +110,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Screen'
+        '400':
+          description: Invalid screen request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Theatre not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /partners/screens/{theatreId}:
     get:
@@ -96,38 +148,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Screen'
-
-  /partners/seats:
-    post:
-      tags: [Seat]
-      summary: Create seat
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SeatRequest'
-      responses:
-        '201':
-          description: Seat created
+        '404':
+          description: Theatre not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Seat'
-
-  /partners/seats/bulk:
-    post:
-      tags: [Seat]
-      summary: Create seats in bulk
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BulkSeatRequest'
-      responses:
-        '201':
-          description: Bulk seats created
+                $ref: '#/components/schemas/ErrorResponse'
 
   /movies:
     post:
@@ -146,6 +172,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Movie'
+        '400':
+          description: Invalid movie request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Movie already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
     get:
       tags: [Movie]
@@ -159,46 +197,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Movie'
-
-  /movies/language/{language}:
-    get:
-      tags: [Movie]
-      summary: Find movies by language
-      parameters:
-        - name: language
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Movies filtered by language
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Movie'
-
-  /movies/genre/{genre}:
-    get:
-      tags: [Movie]
-      summary: Find movies by genre
-      parameters:
-        - name: genre
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Movies filtered by genre
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Movie'
+                $ref: '#/components/schemas/ErrorResponse'
 
   /shows:
     post:
@@ -217,6 +221,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Show'
+        '400':
+          description: Invalid show request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Movie or screen not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /bookings:
     post:
@@ -235,174 +251,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Booking'
+        '400':
+          description: Invalid booking request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Seat already booked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Show or seat not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
 
   schemas:
 
-    PartnerRequest:
+    ErrorResponse:
       type: object
       properties:
-        name:
-          type: string
-        email:
-          type: string
-
-    Partner:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        email:
-          type: string
-
-    TheatreRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        location:
-          type: string
-        partnerId:
-          type: integer
-
-    Theatre:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        location:
-          type: string
-
-    ScreenRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        theatreId:
-          type: integer
-
-    Screen:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        theatreId:
-          type: integer
-
-    SeatRequest:
-      type: object
-      properties:
-        screenId:
-          type: integer
-        seatNumber:
-          type: string
-        type:
-          type: string
-
-    Seat:
-      type: object
-      properties:
-        id:
-          type: integer
-        seatNumber:
-          type: string
-        type:
-          type: string
-        screenId:
-          type: integer
-
-    BulkSeatRequest:
-      type: object
-      properties:
-        screenId:
-          type: integer
-        rows:
-          type: array
-          items:
-            type: string
-        seatsPerRow:
-          type: integer
-
-    MovieRequest:
-      type: object
-      properties:
-        title:
-          type: string
-        language:
-          type: string
-        genre:
-          type: string
-
-    Movie:
-      type: object
-      properties:
-        id:
-          type: integer
-        title:
-          type: string
-        language:
-          type: string
-        genre:
-          type: string
-
-    ShowRequest:
-      type: object
-      properties:
-        movieId:
-          type: integer
-        screenId:
-          type: integer
-        startTime:
+        timestamp:
           type: string
           format: date-time
-        price:
-          type: number
-
-    Show:
-      type: object
-      properties:
-        id:
-          type: integer
-        movieId:
-          type: integer
-        screenId:
-          type: integer
-        startTime:
-          type: string
-        price:
-          type: number
-
-    BookingRequest:
-      type: object
-      properties:
-        showId:
-          type: integer
-        seatIds:
-          type: array
-          items:
-            type: integer
-        userId:
-          type: integer
-
-    Booking:
-      type: object
-      properties:
-        id:
-          type: integer
-        showId:
-          type: integer
-        userId:
-          type: integer
-        seatIds:
-          type: array
-          items:
-            type: integer
         status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
           type: string
