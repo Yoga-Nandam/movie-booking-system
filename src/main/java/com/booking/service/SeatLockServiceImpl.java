@@ -36,7 +36,7 @@ public class SeatLockServiceImpl implements SeatLockService {
             if (lock.isPresent() &&
                     lock.get().getExpiryTime().isAfter(LocalDateTime.now())) {
 
-                throw new RuntimeException("Seat already locked");
+                throw new RuntimeException("Seat already booked/locked");
             }
 
             SeatLock newLock = new SeatLock();
